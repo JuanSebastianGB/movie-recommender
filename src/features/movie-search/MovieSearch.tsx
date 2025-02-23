@@ -8,7 +8,17 @@ interface MovieSearchProps {
 }
 
 export const MovieSearch: React.FC<MovieSearchProps> = ({ onSelectMovie }) => {
-  const { query, setQuery, movies, loading, error, search } = useMovieSearch({
+  const {
+    query,
+    setQuery,
+    movies,
+    loading,
+    error,
+    search,
+    genres,
+    filterOptions: filters,
+    setFilterOptions,
+  } = useMovieSearch({
     initialQuery: '',
     debounceMs: 500,
   });
@@ -16,6 +26,17 @@ export const MovieSearch: React.FC<MovieSearchProps> = ({ onSelectMovie }) => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     search();
+  };
+
+  const handleGenreSearch = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedGenres = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setFilterOptions({ ...filters, genres: selectedGenres.map(Number) });
+  };
+  const handleRatingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterOptions({ ...filters, minRating: +e.target.value });
   };
 
   return (
@@ -32,6 +53,37 @@ export const MovieSearch: React.FC<MovieSearchProps> = ({ onSelectMovie }) => {
           {loading ? <span className={styles.spinner}></span> : 'Search'}
         </button>
       </form>
+      <div className={styles.filters}>
+        <div className={styles.filterGroup}>
+          <label htmlFor="genres">Genres:</label>
+          <select
+            id="genres"
+            multiple
+            value={filters.genres.map(String)}
+            onChange={handleGenreSearch}
+            className={styles.select}
+          >
+            {genres.map((genre) => (
+              <option key={genre.id} value={genre.id}>
+                {genre.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={styles.filterGroup}>
+          <label htmlFor="rating">Min Rating: {filters.minRating}</label>
+          <input
+            id="rating"
+            type="range"
+            min="0"
+            max="10"
+            step="0.5"
+            value={filters.minRating}
+            onChange={handleRatingChange}
+            className={styles.range}
+          />
+        </div>
+      </div>
       {error && <p className={styles.error}>{error}</p>}
       <div className={styles.movieList}>
         {loading && !movies.length ? (

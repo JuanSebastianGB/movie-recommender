@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Movie } from '../types/movie';
-import { fetchMovies } from '../api/api';
+import { FilterOptions, Genre, Movie } from '../types/movie';
+import { fetchGenres, fetchMovies } from '../api/api';
 
 // Define options for the hook
 interface MovieSearchOptions {
@@ -15,6 +15,9 @@ interface MovieSearchResult {
   loading: boolean;
   error: string | null;
   search: () => void; // Manual trigger for the search
+  genres: Genre[];
+  filterOptions: FilterOptions;
+  setFilterOptions: (options: FilterOptions) => void;
 }
 
 export const useMovieSearch = ({
@@ -25,6 +28,11 @@ export const useMovieSearch = ({
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    genres: [],
+    minRating: 0,
+  });
+  const [genres, setGenres] = useState<Genre[]>([]);
 
   // Define the search function
   const performSearch = useCallback(async () => {
@@ -35,7 +43,7 @@ export const useMovieSearch = ({
 
     setLoading(true);
     try {
-      const results = await fetchMovies(query);
+      const results = await fetchMovies(query, filterOptions);
       setMovies(results);
     } catch (err) {
       console.error((err as Error)?.message ?? '');
@@ -43,7 +51,19 @@ export const useMovieSearch = ({
     } finally {
       setLoading(false);
     }
-  }, [query]);
+  }, [query, filterOptions]);
+
+  useEffect(() => {
+    const loadGenres = async () => {
+      try {
+        const genresList = await fetchGenres();
+        setGenres(genresList);
+      } catch (error) {
+        setError((error as Error)?.message ?? 'Failed to fetch genres');
+      }
+    };
+    loadGenres();
+  }, []);
 
   // Debounce effect for automatic search
   useEffect(() => {
@@ -58,6 +78,9 @@ export const useMovieSearch = ({
   return {
     query,
     setQuery,
+    filterOptions,
+    setFilterOptions,
+    genres,
     movies,
     loading,
     error,
