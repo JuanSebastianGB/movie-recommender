@@ -72,6 +72,8 @@ This project uses the TMDB API to fetch movie data. You need to sign up for an A
 
 ![demo](https://github.com/user-attachments/assets/e762bf8e-1431-491e-8d99-fca20a1a9838)
 
+![with filters](image.png)
+
 ## Available Scripts
 
 - `pnpm start`: Starts the development server.
