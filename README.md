@@ -72,16 +72,11 @@ This project uses the TMDB API to fetch movie data. You need to sign up for an A
 
 ![demo](https://github.com/user-attachments/assets/e762bf8e-1431-491e-8d99-fca20a1a9838)
 
-
 ## Available Scripts
 
 - `pnpm start`: Starts the development server.
 - `pnpm build`: Builds the app for production.
 - `pnpm dev`: starts the development server with Vite's hot module replacement.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
