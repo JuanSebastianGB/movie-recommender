@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { FilterOptions, Genre, Movie } from '../types/movie';
+import { FilterOptions, Genre } from '../types/movie';
 import { fetchGenres, fetchMovies } from '../api/api';
+import { useAppDispatch } from '../api/hooks';
+import { fillMovies } from '../features/movie-search/moviesSlice';
 
 // Define options for the hook
 interface MovieSearchOptions {
@@ -11,7 +13,6 @@ interface MovieSearchOptions {
 interface MovieSearchResult {
   query: string;
   setQuery: (query: string) => void;
-  movies: Movie[];
   loading: boolean;
   error: string | null;
   search: () => void; // Manual trigger for the search
@@ -24,8 +25,8 @@ export const useMovieSearch = ({
   initialQuery = '',
   debounceMs = 300,
 }: MovieSearchOptions = {}): MovieSearchResult => {
+  const dispatch = useAppDispatch();
   const [query, setQuery] = useState(initialQuery);
-  const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -37,21 +38,21 @@ export const useMovieSearch = ({
   // Define the search function
   const performSearch = useCallback(async () => {
     if (!query.trim()) {
-      setMovies([]);
+      dispatch(fillMovies([]));
       return;
     }
 
     setLoading(true);
     try {
       const results = await fetchMovies(query, filterOptions);
-      setMovies(results);
+      dispatch(fillMovies(results));
     } catch (err) {
       console.error((err as Error)?.message ?? '');
       setError('Failed to fetch movies');
     } finally {
       setLoading(false);
     }
-  }, [query, filterOptions]);
+  }, [query, filterOptions, dispatch]);
 
   useEffect(() => {
     const loadGenres = async () => {
@@ -81,7 +82,6 @@ export const useMovieSearch = ({
     filterOptions,
     setFilterOptions,
     genres,
-    movies,
     loading,
     error,
     search: performSearch, // Expose the search function for manual triggering

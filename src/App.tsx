@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
-import { Movie, Review } from './types/movie';
 import styles from './App.module.css';
 import { fetchMovieReviews, fetchRecommendations } from './api/api';
 import { MovieSearch } from './features/movie-search/MovieSearch';
+import { useAppDispatch, useAppSelector } from './api/hooks';
+import { fillReviews } from './features/reviews/reviewsSlice';
+import { fillRecommendations } from './features/recomendations/recomendationsSlice';
 
 const App: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const reviews = Object.values(useAppSelector((state) => state.reviews));
+  const recommendations = Object.values(
+    useAppSelector((state) => state.recommendations)
+  );
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [recommendations, setRecommendations] = useState<Movie[]>([]);
 
   const handleSelectMovie = async (id: number) => {
     setSelectedMovieId(id);
     const movieReviews = await fetchMovieReviews(id);
     const movieRecommendations = await fetchRecommendations(id);
-    setReviews(movieReviews);
-    setRecommendations(movieRecommendations);
+    dispatch(fillReviews(movieReviews));
+    dispatch(fillRecommendations(movieRecommendations));
   };
 
   return (

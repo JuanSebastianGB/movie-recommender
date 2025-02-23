@@ -2,16 +2,17 @@ import React from 'react';
 import styles from './MovieSearch.module.css';
 import { useMovieSearch } from '../../hooks/useMovieSearch';
 import { MovieCard } from '../../components/MovieCard/MovieCard';
+import { useAppSelector } from '../../api/hooks';
 
 interface MovieSearchProps {
   onSelectMovie: (id: number) => void;
 }
 
 export const MovieSearch: React.FC<MovieSearchProps> = ({ onSelectMovie }) => {
+  const movies = Object.values(useAppSelector((state) => state.movies));
   const {
     query,
     setQuery,
-    movies,
     loading,
     error,
     search,
