@@ -68,6 +68,11 @@ movie-recommender/
 
 This project uses the TMDB API to fetch movie data. You need to sign up for an API key from [TMDB](https://www.themoviedb.org/documentation/api) and add it to your `.env` file.
 
+## Demo
+
+![demo](https://github.com/user-attachments/assets/e762bf8e-1431-491e-8d99-fca20a1a9838)
+
+
 ## Available Scripts
 
 - `pnpm start`: Starts the development server.
